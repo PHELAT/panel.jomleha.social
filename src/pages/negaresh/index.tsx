@@ -1,6 +1,9 @@
 import Head from 'next/head';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from "firebase/auth";
+import { withIronSessionSsr } from 'iron-session/next';
+import { sessionOptions } from '../../lib/session';
+import { User } from '../api/user';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAPgI4pxTLDOM5xnY-OLFRfiHw-7yuur4M",
@@ -39,3 +42,25 @@ export default function Negaresh() {
         </>
     )
 }
+
+export const getServerSideProps = withIronSessionSsr(async function ({
+    req,
+    res,
+}) {
+    const user = req.session.user
+
+    if (user === undefined) {
+        res.setHeader('location', '/')
+        res.statusCode = 302
+        res.end()
+        return {
+            props: {
+                user: { isLoggedIn: false, token: '' } as User,
+            },
+        }
+    }
+
+    return {
+        props: { user: req.session.user },
+    }
+}, sessionOptions)
