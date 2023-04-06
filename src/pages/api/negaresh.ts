@@ -14,10 +14,10 @@ export type Jomleh = {
     context?: Context
 }
 
-async function addJomleh(jomleh: Jomleh): Promise<string> {
+async function addJomleh(app: any, jomleh: Jomleh): Promise<string> {
     const { getFirestore } = require('firebase-admin/firestore');
 
-    const db = getFirestore();
+    const db = getFirestore(app);
     try {
         const res = await db.collection('jomleha').add(jomleh);
         if (res.id === null || res.id === undefined) {
@@ -32,7 +32,7 @@ async function addJomleh(jomleh: Jomleh): Promise<string> {
 
 async function negareshRoute(req: NextApiRequest, res: NextApiResponse) {
     if (req.session.user) {
-        await initFirebase(req.session.user.credentials)
+        const app = await initFirebase("[FRONT]", req.session.user.credentials, process.env.FIREBASE_FRONT_URL)
         const contextTitle = req.body.context
         const contextUrl = req.body.link
         const jomleh: Jomleh = {
@@ -45,7 +45,7 @@ async function negareshRoute(req: NextApiRequest, res: NextApiResponse) {
                 }
             })
         };
-        addJomleh(jomleh)
+        addJomleh(app, jomleh)
             .then(result => {
                 res.status(200).redirect("/negaresh")
             })

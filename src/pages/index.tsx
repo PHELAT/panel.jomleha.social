@@ -41,6 +41,8 @@ function login() {
     const credential = TwitterAuthProvider.credentialFromResult(result);
     const token = credential!.accessToken;
     // const secret = credential!.secret;
+    // const expiration = credential!.expirationTime
+    // const refreshToken = credential!.refreshToken
     const user = result.user;
     sendLoginRequest(token, user.uid)
   }).catch(error => {

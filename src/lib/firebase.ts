@@ -1,3 +1,5 @@
+export type FirebaseAppName = "[DEFAULT]" | "[FRONT]"
+
 export type FirebaseCredentials = {
     type: string | undefined,
     project_id: string | undefined,
@@ -11,9 +13,14 @@ export type FirebaseCredentials = {
     client_x509_cert_url: string | undefined,
 }
 
-export default async function initFirebase(credentials: FirebaseCredentials | undefined = undefined) {
+export default async function initFirebase(
+    appName: FirebaseAppName = "[DEFAULT]",
+    credentials: FirebaseCredentials | undefined = undefined,
+    databaseURL: string = process.env.FIREBASE_URL as string
+): Promise<any> {
     if (credentials !== undefined) {
-        configureApp(
+        return configureApp(
+            appName,
             {
                 type: credentials.type,
                 project_id: credentials.project_id,
@@ -25,10 +32,12 @@ export default async function initFirebase(credentials: FirebaseCredentials | un
                 token_uri: credentials.token_uri,
                 auth_provider_x509_cert_url: credentials.auth_provider_x509_cert_url,
                 client_x509_cert_url: credentials.client_x509_cert_url,
-            }
+            },
+            databaseURL
         )
     } else if (process.env.FIREBASE_CONFIG === undefined) {
-        configureApp(
+        return configureApp(
+            appName,
             {
                 type: process.env.FIREBASE_TYPE,
                 project_id: process.env.FIREBASE_PROJECT_ID,
@@ -40,21 +49,34 @@ export default async function initFirebase(credentials: FirebaseCredentials | un
                 token_uri: process.env.FIREBASE_TOKEN_URI,
                 auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_CERT_URL,
                 client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
-            }
+            },
+            databaseURL
         )
     } else {
         const fileSystem = require('fs');
         const credentialsFile = fileSystem.readFileSync(process.env.FIREBASE_CONFIG);
-        configureApp(JSON.parse(credentialsFile))
+        return configureApp(appName, JSON.parse(credentialsFile), databaseURL)
     }
 }
 
-function configureApp(credentials: FirebaseCredentials) {
-    const { initializeApp, cert, getApps, getApp } = require('firebase-admin/app');
+function configureApp(
+    appName: FirebaseAppName,
+    credentials: FirebaseCredentials,
+    databaseURL: string
+): any {
+    const { initializeApp, cert, getApps } = require('firebase-admin/app');
+
+    const apps = getApps()
+    for (let i = 0; i < apps.length; i++) {
+        const app = apps[i];
+        if (app.name === appName) {
+            return app;
+        }
+    }
 
     const config = {
         credential: cert(credentials),
-        databaseURL: process.env.FIREBASE_URL
+        databaseURL: databaseURL
     };
-    const app = !getApps().length ? initializeApp(config) : getApp()
+    return initializeApp(config, appName)
 }
