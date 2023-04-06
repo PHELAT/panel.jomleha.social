@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import { withIronSessionSsr } from 'iron-session/next';
 import { sessionOptions } from '../../lib/session';
 import { User } from '../api/user';
+import { InferGetServerSidePropsType } from 'next';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAPgI4pxTLDOM5xnY-OLFRfiHw-7yuur4M",
@@ -18,7 +19,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-export default function Negaresh() {
+export default function Negaresh({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) {
     return (
         <>
             <Head>
@@ -55,7 +56,7 @@ export const getServerSideProps = withIronSessionSsr(async function ({
         res.end()
         return {
             props: {
-                user: { isLoggedIn: false, token: '' } as User,
+                user: { isLoggedIn: false, token: '', username: '', credentials: undefined } as User,
             },
         }
     }
