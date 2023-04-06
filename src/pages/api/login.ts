@@ -39,7 +39,7 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
                 } as User
                 req.session.user = user
                 await req.session.save()
-                res.json(user)
+                res.status(200).json(user)
             })
             .catch(error => {
                 console.log((error as Error).message)

@@ -10,6 +10,7 @@ export type Context = {
 
 export type Jomleh = {
     jomleh: string
+    added: Date,
     context?: Context | undefined
 }
 
@@ -30,6 +31,7 @@ async function negareshRoute(req: NextApiRequest, res: NextApiResponse) {
         await initFirebase(req.session.user.credentials)
         const jomleh: Jomleh = {
             jomleh: req.body.jomleh,
+            added: new Date(),
             context: {
                 title: req.body.context,
                 url: req.body.link
@@ -37,7 +39,7 @@ async function negareshRoute(req: NextApiRequest, res: NextApiResponse) {
         };
         addJomleh(jomleh)
             .then(result => {
-                console.log(result)
+                res.status(200).redirect("/negaresh")
             })
             .catch(error => {
                 console.log((error as Error).message)
