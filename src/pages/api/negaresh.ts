@@ -5,37 +5,45 @@ import { sessionOptions } from '../../lib/session';
 
 export type Context = {
     title: string,
-    url?: string | undefined
+    url?: string
 }
 
 export type Jomleh = {
     jomleh: string
     added: Date,
-    context?: Context | undefined
+    context?: Context
 }
 
 async function addJomleh(jomleh: Jomleh): Promise<string> {
     const { getFirestore } = require('firebase-admin/firestore');
 
     const db = getFirestore();
-    const res = await db.collection('jomleha').add(jomleh);
-    if (res.id === null || res.id === undefined) {
+    try {
+        const res = await db.collection('jomleha').add(jomleh);
+        if (res.id === null || res.id === undefined) {
+            return Promise.reject()
+        }
+        return res.id
+    } catch (error) {
+        console.log((error as Error).message)
         return Promise.reject()
     }
-
-    return res.id
 }
 
 async function negareshRoute(req: NextApiRequest, res: NextApiResponse) {
     if (req.session.user) {
         await initFirebase(req.session.user.credentials)
+        const contextTitle = req.body.context
+        const contextUrl = req.body.link
         const jomleh: Jomleh = {
             jomleh: req.body.jomleh,
             added: new Date(),
-            context: {
-                title: req.body.context,
-                url: req.body.link
-            }
+            ...(contextTitle && {
+                context: {
+                    title: contextTitle,
+                    ...(contextUrl && { url: contextUrl })
+                }
+            })
         };
         addJomleh(jomleh)
             .then(result => {
