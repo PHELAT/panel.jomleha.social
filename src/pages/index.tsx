@@ -1,18 +1,5 @@
-import { initializeApp } from 'firebase/app';
 import { signIn } from "next-auth/react";
 import { GetServerSideProps } from 'next';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAPgI4pxTLDOM5xnY-OLFRfiHw-7yuur4M",
-  authDomain: "jomlehasocialpanel.firebaseapp.com",
-  projectId: "jomlehasocialpanel",
-  storageBucket: "jomlehasocialpanel.appspot.com",
-  messagingSenderId: "759540614073",
-  appId: "1:759540614073:web:ee058ef6cc801a848f6c68",
-  measurementId: "G-9YSZQEE08T"
-};
-
-const app = initializeApp(firebaseConfig);
 
 export default function Home() {
   return (

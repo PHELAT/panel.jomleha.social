@@ -1,20 +1,7 @@
-import { initializeApp } from 'firebase/app';
 import { InferGetServerSidePropsType } from 'next';
 import { useSession } from "next-auth/react"
 import { GetServerSideProps } from 'next';
 import { fetchUser } from '@/lib/user';
-
-const firebaseConfig = {
-    apiKey: "AIzaSyAPgI4pxTLDOM5xnY-OLFRfiHw-7yuur4M",
-    authDomain: "jomlehasocialpanel.firebaseapp.com",
-    projectId: "jomlehasocialpanel",
-    storageBucket: "jomlehasocialpanel.appspot.com",
-    messagingSenderId: "759540614073",
-    appId: "1:759540614073:web:ee058ef6cc801a848f6c68",
-    measurementId: "G-9YSZQEE08T"
-};
-
-const app = initializeApp(firebaseConfig);
 
 export default function Negaresh({ firebaseUser }: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const { data: session } = useSession()
