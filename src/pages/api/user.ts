@@ -1,28 +1,17 @@
-import { withIronSessionApiRoute } from 'iron-session/next'
-import { sessionOptions } from '../../lib/session'
-import { NextApiRequest, NextApiResponse } from 'next'
-
-export type User = {
-  isLoggedIn: boolean
-  token: string,
-  username: string,
+export type FirebaseUser = {
+  id: string,
   credentials: any
 }
 
-async function userRoute(req: NextApiRequest, res: NextApiResponse<User>) {
-  if (req.session.user) {
-    res.json({
-      ...req.session.user,
-      isLoggedIn: true,
-    })
-  } else {
-    res.json({
-      isLoggedIn: false,
-      token: '',
-      username: '',
-      credentials: undefined
-    })
-  }
-}
+export async function fetchUser(username: string): Promise<FirebaseUser> {
+  const { getFirestore } = require('firebase-admin/firestore');
 
-export default withIronSessionApiRoute(userRoute, sessionOptions)
+  const db = getFirestore();
+  const snapshot = await db.collection('adminusers').doc(username).get();
+  if (!snapshot.exists) {
+      return Promise.reject()
+  }
+  const user: FirebaseUser = { id: snapshot.id, ...snapshot.data() }
+
+  return user;
+}

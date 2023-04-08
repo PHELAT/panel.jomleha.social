@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { initializeApp } from 'firebase/app';
-import { TwitterAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import { signIn } from "next-auth/react"
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPgI4pxTLDOM5xnY-OLFRfiHw-7yuur4M",
@@ -13,8 +13,6 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new TwitterAuthProvider();
 
 export default function Home() {
   return (
@@ -37,41 +35,5 @@ export default function Home() {
 }
 
 function login() {
-  signInWithPopup(auth, provider).then((result: any) => {
-    const credential = TwitterAuthProvider.credentialFromResult(result);
-    const token = credential!.accessToken;
-    // const secret = credential!.secret;
-    // const expiration = credential!.expirationTime
-    // const refreshToken = credential!.refreshToken
-    const user = result.user;
-    sendLoginRequest(token, user.uid)
-  }).catch(error => {
-    console.log("Login failed")
-    // const errorCode = error.code;
-    // const errorMessage = error.message;
-    // const email = error.customData.email;
-    // const credential = TwitterAuthProvider.credentialFromError(error);
-  })
-}
-
-function sendLoginRequest(token: string | undefined, username: string | undefined) {
-  if (token === undefined || username === undefined) {
-    return
-  }
-  const requestBody = { username: username, token: token }
-  fetch(
-    "/api/login",
-    {
-      method: "POST",
-      body: JSON.stringify(requestBody)
-    }
-  ).then(result => {
-    if (result.status === 200) {
-      window.location.href = "/negaresh"
-    } else {
-      console.log(`Login error: ${result.status} | ${result.body}`)
-    }
-  }).catch(error => {
-    console.log(`Login error: ${(error as Error).message}`)
-  })
+  signIn('twitter', { callbackUrl: '/api/login' })
 }

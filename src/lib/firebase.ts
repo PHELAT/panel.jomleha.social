@@ -80,3 +80,5 @@ function configureApp(
     };
     return initializeApp(config, appName)
 }
+
+module.exports = initFirebase
