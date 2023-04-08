@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { initializeApp } from 'firebase/app';
-import { signIn } from "next-auth/react"
+import { signIn } from "next-auth/react";
+import { GetServerSideProps } from 'next';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPgI4pxTLDOM5xnY-OLFRfiHw-7yuur4M",
@@ -36,4 +37,24 @@ export default function Home() {
 
 function login() {
   signIn('twitter', { callbackUrl: '/api/login' })
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { getServerSession } = require("next-auth/next");
+  const { authOptions } = require("./api/auth/[...nextauth]");
+
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (session) {
+    return {
+      redirect: {
+        statusCode: 302,
+        destination: '/negaresh'
+      }
+    }
+  } else {
+    return {
+      props: {}
+    }
+  }
 }
