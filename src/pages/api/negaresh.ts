@@ -33,7 +33,7 @@ async function addJomleh(app: any, jomleh: Jomleh): Promise<string> {
     }
 }
 
-async function tweetJomleh(session: Session, jomleh: Jomleh) {
+async function tweetJomleh(session: Session, jomleh: Jomleh, jomlehId: string) {
     const authClient = new auth.OAuth2User({
         client_id: process.env.TWITTER_CLIENT_ID as string,
         client_secret: process.env.TWITTER_CLIENT_SECRET as string,
@@ -49,6 +49,17 @@ async function tweetJomleh(session: Session, jomleh: Jomleh) {
     });
     const twitterClient = new Client(authClient);
     const tweet = await twitterClient.tweets.createTweet({ text: jomleh.jomleh });
+    if (tweet.data) {
+        const replyLink = await twitterClient.tweets.createTweet(
+            {
+                text: `${process.env.APP_URL}/${jomlehId}`,
+                reply: {
+                    in_reply_to_tweet_id: tweet.data.id
+                }
+            }
+        );
+        return replyLink;
+    }
     return tweet;
 }
 
@@ -74,7 +85,7 @@ export default async function negareshRoute(req: NextApiRequest, res: NextApiRes
                 };
                 addJomleh(app, jomleh)
                     .then(async function (result) {
-                        const tweet = await tweetJomleh(session, jomleh);
+                        const tweet = await tweetJomleh(session, jomleh, result);
                         if (tweet.data) {
                             console.log(`TWEETED ${tweet.data.id}`)
                             res.status(200).redirect("/negaresh")
