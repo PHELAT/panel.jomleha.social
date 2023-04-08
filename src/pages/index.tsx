@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import { initializeApp } from 'firebase/app';
 import { signIn } from "next-auth/react";
 import { GetServerSideProps } from 'next';
@@ -18,12 +17,6 @@ const app = initializeApp(firebaseConfig);
 export default function Home() {
   return (
     <>
-      <Head>
-        <title>Jomleha Panel</title>
-        <meta name="description" content="Jomleha Panel" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <div className='flex flex-col h-screen justify-between'>
         <main className='w-full h-full flex items-center justify-center px-8'>
           <div className='flex flex-col gap-4'>
