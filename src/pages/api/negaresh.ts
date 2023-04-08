@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import initFirebase from '@/lib/firebase';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./auth/[...nextauth]";
-import { fetchUser } from './user';
+import { fetchUser } from '@/lib/user';
 import { Client, auth } from "twitter-api-sdk";
 import { Session } from 'next-auth';
 

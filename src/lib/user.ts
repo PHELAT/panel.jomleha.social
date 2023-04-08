@@ -1,4 +1,3 @@
-// TODO: Move this to /lib
 export type FirebaseUser = {
   id: string,
   credentials: any

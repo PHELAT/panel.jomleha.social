@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { InferGetServerSidePropsType } from 'next';
 import { useSession } from "next-auth/react"
 import { GetServerSideProps } from 'next';
-import { fetchUser } from '../api/user';
+import { fetchUser } from '@/lib/user';
 
 const firebaseConfig = {
     apiKey: "AIzaSyAPgI4pxTLDOM5xnY-OLFRfiHw-7yuur4M",
