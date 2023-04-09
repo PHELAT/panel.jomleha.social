@@ -18,6 +18,7 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async jwt({ token, account }) {
+      // TODO: handle refresh token
       if (account) {
         token.accountId = account.providerAccountId
         token.accessToken = account.access_token
