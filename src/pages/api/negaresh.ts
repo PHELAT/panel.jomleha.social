@@ -22,45 +22,53 @@ async function addJomleh(app: any, jomleh: Jomleh): Promise<string> {
 
     const db = getFirestore(app);
     try {
-        const res = await db.collection('jomleha').add(jomleh);
-        if (res.id === null || res.id === undefined) {
+        const stringHash = require('string-hash');
+        const docId = `#${stringHash(jomleh.jomleh)}`
+        const res = await db.collection('jomleha').doc(docId).set(jomleh);
+        if (!res._writeTime) {
             return Promise.reject()
         }
-        return res.id
+        return docId
     } catch (error) {
         console.log((error as Error).message)
         return Promise.reject()
     }
 }
 
-async function tweetJomleh(session: Session, jomleh: Jomleh, jomlehId: string) {
-    const authClient = new auth.OAuth2User({
-        client_id: process.env.TWITTER_CLIENT_ID as string,
-        client_secret: process.env.TWITTER_CLIENT_SECRET as string,
-        callback: process.env.LOGIN_CALLBACK as string,
-        scopes: ["users.read", "tweet.read", "offline.access", "tweet.write"],
-        token: {
-            access_token: session.accessToken,
-            refresh_token: session.refreshToken,
-            expires_at: session.expiresAt,
-            token_type: "bearer",
-            scope: "users.read,tweet.read,offline.access,tweet.write"
-        }
-    });
-    const twitterClient = new Client(authClient);
-    const tweet = await twitterClient.tweets.createTweet({ text: jomleh.jomleh });
-    if (tweet.data) {
-        const replyLink = await twitterClient.tweets.createTweet(
-            {
-                text: `${process.env.APP_URL}/${jomlehId}`,
-                reply: {
-                    in_reply_to_tweet_id: tweet.data.id
-                }
+async function tweetJomleh(session: Session, jomleh: Jomleh, jomlehId: string): Promise<any> {
+    try {
+        const authClient = new auth.OAuth2User({
+            client_id: process.env.TWITTER_CLIENT_ID as string,
+            client_secret: process.env.TWITTER_CLIENT_SECRET as string,
+            callback: process.env.LOGIN_CALLBACK as string,
+            scopes: ["users.read", "tweet.read", "offline.access", "tweet.write"],
+            token: {
+                access_token: session.accessToken,
+                refresh_token: session.refreshToken,
+                expires_at: session.expiresAt,
+                token_type: "bearer",
+                scope: "users.read,tweet.read,offline.access,tweet.write"
             }
-        );
-        return replyLink;
+        });
+        const twitterClient = new Client(authClient);
+        const tweet = await twitterClient.tweets.createTweet({ text: jomleh.jomleh });
+        if (tweet.data) {
+            const replyLink = await twitterClient.tweets.createTweet(
+                {
+                    text: `${process.env.APP_URL}/${jomlehId}`,
+                    reply: {
+                        in_reply_to_tweet_id: tweet.data.id
+                    }
+                }
+            );
+            return replyLink;
+        }
+        tweet
+        return tweet;
+    } catch (error) {
+        console.log(`${JSON.stringify((error as Error))}`)
+        return Promise.reject(error)
     }
-    return tweet;
 }
 
 export default async function negareshRoute(req: NextApiRequest, res: NextApiResponse) {
@@ -97,7 +105,6 @@ export default async function negareshRoute(req: NextApiRequest, res: NextApiRes
                         }
                     })
                     .catch(error => {
-                        console.log((error as Error).message)
                         res.status(500).json({ "message": "Oopsie!" })
                     })
             })

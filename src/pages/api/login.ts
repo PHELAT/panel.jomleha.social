@@ -9,17 +9,14 @@ export default async function loginRoute(req: NextApiRequest, res: NextApiRespon
 
     if (session && session.accountId) {
         await initFirebase();
-        // TODO: encrypt accountId for retrieval
         fetchUser(session.accountId)
             .then(result => {
                 res.redirect(302, '/negaresh')
             })
             .catch(error => {
-                // TODO: redirect to a specific page
                 res.redirect(302, '/')
             })
     } else {
-        // TODO: redirect to a specific page
         res.redirect(302, '/')
     }
 }
