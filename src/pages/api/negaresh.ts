@@ -23,7 +23,7 @@ async function addJomleh(app: any, jomleh: Jomleh): Promise<string> {
     const db = getFirestore(app);
     try {
         const stringHash = require('string-hash');
-        const docId = `#${stringHash(jomleh.jomleh)}`
+        const docId = `${stringHash(jomleh.jomleh)}`
         const res = await db.collection('jomleha').doc(docId).set(jomleh);
         if (!res._writeTime) {
             return Promise.reject()
