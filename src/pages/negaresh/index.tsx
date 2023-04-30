@@ -13,9 +13,9 @@ export default function Negaresh({ firebaseUser }: InferGetServerSidePropsType<t
                         ? (
                             <div className='flex flex-col gap-4'>
                                 <form className='flex flex-col gap-4' id='jomlehform' method='post' action='/api/negaresh'>
-                                    <textarea className='form-textarea' name='jomleh' placeholder='جمله'></textarea>
-                                    <input className='form-input' type='text' name='context' placeholder='زمینه'></input>
-                                    <input className='form-input' type='url' name='link' placeholder='پیوند'></input>
+                                    <textarea className='form-textarea' name='jomleh' placeholder='جمله' dir='auto'></textarea>
+                                    <input className='form-input rtlplaceholder' type='text' name='context' placeholder='زمینه' dir='auto'></input>
+                                    <input className='form-input rtlplaceholder' type='url' name='link' placeholder='پیوند' dir='auto'></input>
                                 </form>
                                 <button className='px-4 py-1 text-sm text-zinc-600 font-semibold rounded-none border border-zinc-200 hover:text-white hover:bg-zinc-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2' type='submit' form='jomlehform'>نگارش</button>
                             </div>
